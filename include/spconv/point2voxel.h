@@ -34,7 +34,7 @@ int points_to_voxel_3d_np(py::array_t<DType> points, py::array_t<DType> voxels,
                           py::array_t<int> coor_to_voxelidx,
                           std::vector<DType> voxel_size,
                           std::vector<DType> coors_range, int max_points,
-                          int max_voxels) {
+                          int max_voxels, int interval_size) {
   auto points_rw = points.template mutable_unchecked<2>();
   auto voxels_rw = voxels.template mutable_unchecked<3>();
   auto coors_rw = coors.mutable_unchecked<2>();
@@ -54,7 +54,15 @@ int points_to_voxel_3d_np(py::array_t<DType> points, py::array_t<DType> voxels,
         round((coors_range[NDim + i] - coors_range[i]) / voxel_size[i]);
   }
   int voxelidx, num;
-  for (int i = 0; i < N; ++i) {
+  // int interval_size = 100;
+  int i = -interval_size;
+  int last_begin = 0;
+  for (int index = 0; index < N; ++index) {
+    i += interval_size;
+    if (i >= N) {
+        last_begin += 1;
+        i = last_begin;
+    }
     failed = false;
     for (int j = 0; j < NDim; ++j) {
       c = floor((points_rw(i, j) - coors_range[j]) / voxel_size[j]);

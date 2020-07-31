@@ -22,6 +22,7 @@ def points_to_voxel(points,
                      voxel_size,
                      coors_range,
                      coor_to_voxelidx,
+                     interval_size,
                      max_points=35,
                      max_voxels=20000):
     """convert 3d points(N, >=3) to voxels. This version calculate
@@ -58,7 +59,7 @@ def points_to_voxel(points,
     coors = np.zeros(shape=(max_voxels, 3), dtype=np.int32)
     voxel_num = points_to_voxel_3d_np(
         points, voxels, coors, num_points_per_voxel, coor_to_voxelidx,
-        voxel_size.tolist(), coors_range.tolist(), max_points, max_voxels)
+        voxel_size.tolist(), coors_range.tolist(), max_points, max_voxels, interval_size)
     # coors = coors[:voxel_num]
     # voxels = voxels[:voxel_num]
     # num_points_per_voxel = num_points_per_voxel[:voxel_num]
@@ -69,6 +70,7 @@ class VoxelGenerator:
                  voxel_size,
                  point_cloud_range,
                  max_num_points,
+                 interval_size,
                  max_voxels=20000):
         point_cloud_range = np.array(point_cloud_range, dtype=np.float32)
         # [0, -40, -3, 70.4, 40, 1]
@@ -85,11 +87,12 @@ class VoxelGenerator:
         self._max_num_points = max_num_points
         self._max_voxels = max_voxels
         self._grid_size = grid_size
+        self.interval_size = interval_size
 
     def generate(self, points, max_voxels=None):
         res = points_to_voxel(
             points, self._voxel_size, self._point_cloud_range, self._coor_to_voxelidx,
-            self._max_num_points, max_voxels or self._max_voxels)
+            self.interval_size, self._max_num_points, max_voxels or self._max_voxels)
         voxels, coors, num_points_per_voxel, voxel_num = res
         coors = coors[:voxel_num]
         voxels = voxels[:voxel_num]
@@ -100,7 +103,7 @@ class VoxelGenerator:
     def generate_multi_gpu(self, points, max_voxels=None):
         res = points_to_voxel(
             points, self._voxel_size, self._point_cloud_range, self._coor_to_voxelidx,
-            self._max_num_points, max_voxels or self._max_voxels)
+            self.interval_size, self._max_num_points, max_voxels or self._max_voxels)
         return res
 
 

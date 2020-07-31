@@ -53,10 +53,10 @@ PYBIND11_MODULE(spconv_utils, m)
           "matrix tensor_square", "points"_a = 1, "voxels"_a = 2, "coors"_a = 3,
           "num_points_per_voxel"_a = 4, "coor_to_voxelidx"_a = 5,
           "voxel_size"_a = 6, "coors_range"_a = 7, "max_points"_a = 8,
-          "max_voxels"_a = 9);
+          "max_voxels"_a = 9, "interval_size"_a = 10);
     m.def("points_to_voxel_3d_np", &spconv::points_to_voxel_3d_np<double, 3>,
           "matrix tensor_square", "points"_a = 1, "voxels"_a = 2, "coors"_a = 3,
           "num_points_per_voxel"_a = 4, "coor_to_voxelidx"_a = 5,
           "voxel_size"_a = 6, "coors_range"_a = 7, "max_points"_a = 8,
-          "max_voxels"_a = 9);
+          "max_voxels"_a = 9, "interval_size"_a = 10);
 }

@@ -1,3 +1,6 @@
+Add interval_size to point_to_voxel function
+
+
 # SpConv: PyTorch Spatially Sparse Convolution Library
 
 This is a spatially sparse convolution library like [SparseConvNet](https://github.com/facebookresearch/SparseConvNet) but faster and easy to read. This library provide sparse convolution/transposed, submanifold convolution, inverse convolution and sparse maxpool.
