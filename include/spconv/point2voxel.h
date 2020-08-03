@@ -19,9 +19,56 @@
 #include <algorithm>
 #include <pybind11/numpy.h>
 #include <pybind11/stl.h>
-// #include <vector>
+#include <vector>
 #include <iostream>
 #include <math.h>
+
+std::vector<int> init_vector(int bit_count) {
+  struct Number {
+    std::vector<int> bit_list;
+    Number(int N): bit_list(N) {
+      for (int i = 0; i < N; ++i) {
+        bit_list[i] = 0;
+      }
+    }
+    int get_number() {
+      int result = 0;
+      // int shift_count = bit_list.size() - 1;
+      for (int i = 0; i < bit_list.size(); ++i) {
+        result |= bit_list[i] << (bit_list.size() - 1 - i);
+      }
+      return result;
+    }
+    bool next() {
+      int i = 0;
+      while (i < bit_list.size()) {
+        bit_list[i] += 1;
+        if (bit_list[i] == 1) {
+          return true;
+        }
+        bit_list[i] = 0;
+        i += 1;
+      }
+      return false;
+    }
+  };
+  Number number(bit_count);
+
+  int N = 2;
+  while (--bit_count > 0) {
+    N *= 2;
+  }
+  std::vector<int> result(N);
+  for (int i = 0; i < N; ++i) {
+    result[i] = number.get_number();
+    number.next();
+  }
+  return result;
+}
+
+std::vector<int> index_list = init_vector(17);
+
+
 
 namespace spconv {
 namespace py = pybind11;
@@ -34,7 +81,7 @@ int points_to_voxel_3d_np(py::array_t<DType> points, py::array_t<DType> voxels,
                           py::array_t<int> coor_to_voxelidx,
                           std::vector<DType> voxel_size,
                           std::vector<DType> coors_range, int max_points,
-                          int max_voxels, int interval_size) {
+                          int max_voxels) {
   auto points_rw = points.template mutable_unchecked<2>();
   auto voxels_rw = voxels.template mutable_unchecked<3>();
   auto coors_rw = coors.mutable_unchecked<2>();
@@ -54,14 +101,15 @@ int points_to_voxel_3d_np(py::array_t<DType> points, py::array_t<DType> voxels,
         round((coors_range[NDim + i] - coors_range[i]) / voxel_size[i]);
   }
   int voxelidx, num;
-  // int interval_size = 100;
-  int i = -interval_size;
-  int last_begin = 0;
+  if (N > index_list.size()) {
+    std::cout << "Too Many Points!\n";
+    N = index_list.size();
+  }
+  int cur = 0;
   for (int index = 0; index < N; ++index) {
-    i += interval_size;
-    if (i >= N) {
-        last_begin += 1;
-        i = last_begin;
+    i = index_list[cur++];
+    while (i >= N) {
+      i = index_list[cur++];
     }
     failed = false;
     for (int j = 0; j < NDim; ++j) {

@@ -1,4 +1,4 @@
-Add interval_size to point_to_voxel function
+binary select in point_to_voxel function
 
 
 # SpConv: PyTorch Spatially Sparse Convolution Library
