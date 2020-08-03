@@ -66,7 +66,8 @@ std::vector<int> init_vector(int bit_count) {
   return result;
 }
 
-std::vector<int> index_list = init_vector(17);
+std::vector<int> index_list_less = init_vector(17);
+std::vector<int> index_list_more = init_vector(18);
 
 
 
@@ -101,16 +102,21 @@ int points_to_voxel_3d_np(py::array_t<DType> points, py::array_t<DType> voxels,
         round((coors_range[NDim + i] - coors_range[i]) / voxel_size[i]);
   }
   int voxelidx, num;
-  if (N > index_list.size()) {
-    std::cout << "Too Many Points!\n";
-    N = index_list.size();
+  
+  std::vector<int>* index_list = &index_list_less;
+  if (N > index_list->size()) {
+    index_list = &index_list_more;
+    if (N > index_list->size()) {
+      std::cout << "Too Many Points!\n";
+      N = index_list->size();
+    }
   }
   int cur = 0;
   int i;
   for (int index = 0; index < N; ++index) {
-    i = index_list[cur++];
+    i = (*index_list)[cur++];
     while (i >= N) {
-      i = index_list[cur++];
+      i = (*index_list)[cur++];
     }
     failed = false;
     for (int j = 0; j < NDim; ++j) {
