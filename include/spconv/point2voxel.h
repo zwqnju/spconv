@@ -106,6 +106,7 @@ int points_to_voxel_3d_np(py::array_t<DType> points, py::array_t<DType> voxels,
     N = index_list.size();
   }
   int cur = 0;
+  int i;
   for (int index = 0; index < N; ++index) {
     i = index_list[cur++];
     while (i >= N) {
